@@ -2,197 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cell Structure Quiz Battle</title>
+  <title>Simple Quiz</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f0ff;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      background: white;
+      font-family: sans-serif;
+      background: #fff0f5;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
       text-align: center;
-      color: #6a1b9a;
     }
 
     .question {
-      margin-bottom: 20px;
+      display: none;
     }
 
-    .options button {
+    .question.active {
       display: block;
-      width: 100%;
-      margin: 10px 0;
+    }
+
+    .option {
+      display: block;
+      margin: 10px auto;
       padding: 12px;
-      font-size: 16px;
-      background: #ede7f6;
-      border: none;
+      width: 60%;
+      font-size: 18px;
+      border: 2px solid #aaa;
       border-radius: 8px;
+      background: #fce4ec;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: 0.3s;
     }
 
-    .options button:hover {
-      background: #d1c4e9;
+    input[type="radio"] {
+      display: none;
     }
 
-    .disabled {
-      pointer-events: none;
-      opacity: 0.6;
+    input.correct:checked + label {
+      background-color: #a5d6a7;
+      border-color: green;
+      color: green;
     }
 
-    #status {
+    input.wrong:checked + label {
+      background-color: #ef9a9a;
+      border-color: red;
+      color: red;
+    }
+
+    .next-button {
       margin-top: 20px;
-      text-align: center;
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #ba68c8;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
       font-weight: bold;
+      cursor: pointer;
     }
 
     #result {
       display: none;
-      text-align: center;
-      font-size: 20px;
-      margin-top: 30px;
-    }
-
-    .scoreboard {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Quiz Battle: Cell Structure</h2>
-    <div id="quiz">
-      <div class="question" id="questionText"></div>
-      <div class="options" id="options"></div>
-      <div id="status">Searching for opponent...</div>
-    </div>
-    <div id="result">
-      <h3>Battle Result</h3>
-      <div class="scoreboard">
-        <div>You: <span id="yourScore"></span></div>
-        <div>Opponent: <span id="botScore"></span></div>
-      </div>
-    </div>
+
+  <div class="question active" id="q1">
+    <h2>Question 1:</h2>
+    <p>Which is the powerhouse of the cell?</p>
+
+    <input type="radio" id="q1a" name="q1" class="wrong">
+    <label for="q1a" class="option">Nucleus</label>
+
+    <input type="radio" id="q1b" name="q1" class="correct">
+    <label for="q1b" class="option">Mitochondria</label>
+
+    <input type="radio" id="q1c" name="q1" class="wrong">
+    <label for="q1c" class="option">Golgi apparatus</label>
+
+    <input type="radio" id="q1d" name="q1" class="wrong">
+    <label for="q1d" class="option">Lysosome</label>
+
+    <div class="next-button" onclick="nextQuestion('q1', 'q2')">Next</div>
+  </div>
+
+  <div class="question" id="q2">
+    <h2>Question 2:</h2>
+    <p>What is the basic unit of life?</p>
+
+    <input type="radio" id="q2a" name="q2" class="correct">
+    <label for="q2a" class="option">Cell</label>
+
+    <input type="radio" id="q2b" name="q2" class="wrong">
+    <label for="q2b" class="option">Tissue</label>
+
+    <input type="radio" id="q2c" name="q2" class="wrong">
+    <label for="q2c" class="option">Organ</label>
+
+    <input type="radio" id="q2d" name="q2" class="wrong">
+    <label for="q2d" class="option">System</label>
+
+    <div class="next-button" onclick="nextQuestion('q2', 'q3')">Next</div>
+  </div>
+
+  <div class="question" id="q3">
+    <h2>Question 3:</h2>
+    <p>Which organelle contains DNA?</p>
+
+    <input type="radio" id="q3a" name="q3" class="correct">
+    <label for="q3a" class="option">Nucleus</label>
+
+    <input type="radio" id="q3b" name="q3" class="wrong">
+    <label for="q3b" class="option">Ribosome</label>
+
+    <input type="radio" id="q3c" name="q3" class="wrong">
+    <label for="q3c" class="option">Cell Membrane</label>
+
+    <input type="radio" id="q3d" name="q3" class="wrong">
+    <label for="q3d" class="option">Golgi body</label>
+
+    <div class="next-button" onclick="finishQuiz()">Finish</div>
+  </div>
+
+  <div id="result">
+    <h2>Quiz Completed!</h2>
+    <p>Count how many green answers you got. That’s your score.</p>
+    <div class="next-button" onclick="restart()">Try Again</div>
   </div>
 
   <script>
-    const questions = [
-      {
-        q: "Which organelle is known as the powerhouse of the cell?",
-        options: ["Ribosome", "Mitochondria", "Golgi body", "Lysosome"],
-        correct: 1
-      },
-      {
-        q: "The cell wall in plant cells is made of:",
-        options: ["Cellulose", "Chitin", "Protein", "Lipids"],
-        correct: 0
-      },
-      {
-        q: "Which cell organelle contains its own DNA?",
-        options: ["Lysosome", "Mitochondria", "Ribosome", "Golgi Apparatus"],
-        correct: 1
-      },
-      {
-        q: "Nucleus is absent in:",
-        options: ["Amoeba", "RBC", "Paramecium", "Fungi"],
-        correct: 1
-      },
-      {
-        q: "Which of these is not a membrane-bound organelle?",
-        options: ["Nucleus", "Lysosome", "Ribosome", "Mitochondria"],
-        correct: 2
-      }
-    ];
-
-    let index = 0;
-    let score = 0;
-    let botScore = 0;
-
-    const questionText = document.getElementById('questionText');
-    const options = document.getElementById('options');
-    const status = document.getElementById('status');
-    const result = document.getElementById('result');
-    const yourScore = document.getElementById('yourScore');
-    const botScoreDisplay = document.getElementById('botScore');
-
-    function loadQuestion() {
-      const q = questions[index];
-      questionText.textContent = Q${index + 1}: ${q.q};
-      options.innerHTML = "";
-
-      q.options.forEach((opt, i) => {
-        const btn = document.createElement("button");
-        btn.textContent = opt;
-        btn.onclick = () => selectAnswer(i);
-        options.appendChild(btn);
-      });
-
-      status.textContent = "Your turn...";
+    function nextQuestion(currentId, nextId) {
+      document.getElementById(currentId).classList.remove('active');
+      document.getElementById(nextId).classList.add('active');
     }
 
-    function selectAnswer(i) {
-      const correct = questions[index].correct;
-      if (i === correct) {
-        score++;
-      }
-
-      disableOptions();
-      status.textContent = "Opponent is thinking...";
-
-      setTimeout(() => {
-        const botCorrect = Math.random() > 0.4;
-        if (botCorrect) botScore++;
-        nextQuestion();
-      }, 2000);
+    function finishQuiz() {
+      document.getElementById('q3').classList.remove('active');
+      document.getElementById('result').style.display = 'block';
     }
 
-    function disableOptions() {
-      const buttons = options.querySelectorAll("button");
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add("disabled");
-      });
+    function restart() {
+      location.reload();
     }
-
-    function nextQuestion() {
-      index++;
-      if (index < questions.length) {
-        loadQuestion();
-      } else {
-        showResult();
-      }
-    }
-
-    function showResult() {
-      document.getElementById('quiz').style.display = 'none';
-      result.style.display = 'block';
-      yourScore.textContent = score;
-      botScoreDisplay.textContent = botScore;
-    }
-
-    // Simulate opponent joining
-    setTimeout(() => {
-      status.textContent = "Opponent found: Anjali_P (Delhi)";
-      setTimeout(() => {
-        loadQuestion();
-      }, 2000);
-    }, 2000);
-    <script src="script.js"></script>
   </script>
 </body>
 </html>
